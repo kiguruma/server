@@ -13,7 +13,7 @@ app.use(cors())
 //bodyParserを許可する
 app.use(bodyParser());
 
-const todos = [
+let todos = [
     {
     id: 1,
     content: 'aaa'
@@ -32,17 +32,40 @@ app.get('/todos', (req, res) => {
     res.json(todos)
 })
 
+const generateId = () => {
+    // const ids = todos.map(todo => todo.id)
+    // let maxGetId = Math.max(...ids) + 1 
+    // return maxGetId
+    if (todos.length === 0 ) {
+        return 1
+    } else {
+        return Math.max(...todos.map(todo => todo.id)) + 1
+    }
+}
 
 app.post('/todos',(req, res) => {
-    res.json(todos.concat(req.body))
+    todo = {
+       content: req.body.content,
+       id: generateId()
+    }
+    todos = todos.concat(todo)
+    res.json(todo)
+    console.log(todos.length,'post後')
+
+            
+            
 })
 
+
+
 app.delete('/todos/:id', function (req, res) {
-    res.json(
-        todos.filter(todo => todo.id !=
-            req.params.id
+        todos =  todos.filter(todo => todo.id !=
+                req.params.id
             )
-            )
+            console.log(todos.length,'delete後')
+
+            res.status(204).end()
+
 })
 
 app.listen(3001, () => {
