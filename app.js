@@ -5,6 +5,19 @@ const mongoose = require('mongoose');
 
 mongoose.connect('mongodb+srv://yamoto:kiguruma@cluster0-eshrb.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true});
 
+const todoSchema = mongoose.Schema({
+    content: String
+})
+
+todoSchema.set('toJSON',{
+    transform: (doc, todo) => {
+        todo.id = todo._id.toString()
+        delete todo._id
+        delete todo.__v
+    }
+})
+
+const Todo = mongoose.model('Todo', todoSchema)
 
 
 
@@ -16,23 +29,12 @@ app.use(cors())
 //bodyParserを許可する
 app.use(bodyParser());
 
-let todos = [
-    {
-    id: 1,
-    content: 'aaa'
-    },
-    {
-    id: 2,
-    content: 'bbb'
-    },
-    {
-    id: 3,
-    content: 'ccc'
-    }
-]
 
 app.get('/todos', (req, res) => {
-    res.json(todos)
+    Todo.find({})
+        .then(todos => {
+            res.json(todos.map(todo => todo.toJSON()))
+        })
 })
 
 const generateId = () => {
@@ -47,12 +49,12 @@ const generateId = () => {
 }
 
 app.post('/todos',(req, res) => {
-    todo = {
-    content: req.body.content,
-    id: generateId()
-    }
-    todos = todos.concat(todo)
-    res.json(todo)
+
+    const todo = new Todo({ content: req.body.content})
+    todo.save()
+    .then( todo => {
+        res.json(todo.toJSON())
+    })
 })
 
 
