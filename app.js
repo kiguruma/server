@@ -1,6 +1,9 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb+srv://yamoto:kiguruma@cluster0-eshrb.mongodb.net/test?retryWrites=true&w=majority', {useNewUrlParser: true});
 
 
 
@@ -45,15 +48,11 @@ const generateId = () => {
 
 app.post('/todos',(req, res) => {
     todo = {
-       content: req.body.content,
-       id: generateId()
+    content: req.body.content,
+    id: generateId()
     }
     todos = todos.concat(todo)
     res.json(todo)
-    console.log(todos.length,'post後')
-
-            
-            
 })
 
 
